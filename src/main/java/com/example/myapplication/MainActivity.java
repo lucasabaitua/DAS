@@ -1,29 +1,17 @@
 package com.example.myapplication;
 
-import static com.example.myapplication.ComandosSQL.DESCRIP;
-import static com.example.myapplication.ComandosSQL.FECHA;
-import static com.example.myapplication.ComandosSQL.TITULO;
-
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.example.myapplication.Adaptadores.prendasOverview;
 import com.example.myapplication.Entidades.Prenda;
@@ -34,45 +22,50 @@ public class MainActivity extends AppCompatActivity {
     prendasOverview prendaOverview ;
     ConexionBBDDLocal ddbb;
 
-    /*ActivityResultLauncher<Intent> startActivityIntent = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-                    new ActivityResultCallback<ActivityResult>() {
-                        @Override
-                        public void onActivityResult(ActivityResult result) {
-                            // Add same code that you want to add in onActivityResult
-                            //method
-                            if (result.getResultCode() == RESULT_OK) {
-                                Prenda pr = result.getData().getStringExtra("variable_01");
-                            }
-                        }
-                    });*/
-
 
     // cuando se inicializa la clase
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // se inicializa una instancia de la clase y se muestra la interfaz activity_main
+        //dependiendo de la orientación del teléfono se muestra un layout u otro
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        //prueba manual
-            //Prenda p = new Prenda("Titulo ejemplo", "Descripcion", "17-05-2022", R.drawable.ic_launcher_background);
-            //Prenda p1 = new Prenda("Titulo ejemplo2", "Descripcion2", "13-05-2022", R.drawable.ic_launcher_background);
-            //listaPrendas.add(p);
-            //listaPrendas.add(p1);
+        if (getResources().getConfiguration().orientation== Configuration.ORIENTATION_LANDSCAPE){
+            setContentView(R.layout.activity_main_land);
+        }
+        else{
+            setContentView(R.layout.activity_main);
+        }
+
         // se llama al método crearLista que muestra en la interfaz la lista de prendas que hay
         //ya registradas anteriormente
         crearLista();
         prendaOverview = new prendasOverview(listaPrendas,getApplicationContext());
+
         ListView prendas = (ListView) findViewById(R.id.lPrendas);
+
+        // utilizamos un listener para saber cuando se desea eliminar una prenda de la lista
+        prendaOverview.setOnItemDeleteListener(new prendasOverview.OnItemDeleteListener() {
+            @Override
+            public void onItemDelete(int pos) {
+                ConexionBBDDLocal bbdd = new ConexionBBDDLocal(getApplicationContext(), "prendas", null, 1);
+                SQLiteDatabase sql = bbdd.getWritableDatabase();
+                String whereClause = "fecha = " + listaPrendas.get(pos).getFechaColgado();
+                // se borran las prendas que tengan la misma fecha, tanto de la interfaz como de la BD
+                sql.delete("prendas", whereClause, null);
+                listaPrendas.remove(pos);
+                prendaOverview.notifyDataSetChanged();
+            }
+        });
+        // se adapta la lista de Prendas a la manera en la que queremos que se muestre por pantalla
         prendas.setAdapter(prendaOverview);
 
         Button nuevaPrenda = findViewById(R.id.botonCrearPrenda);
+        // cuando deseamos introducir una nueva prenda nos lleva a la clase para introducirla
         nuevaPrenda.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, IntroducirPrendas.class);
                 startActivity(intent);
                 finish();
-                //mirar pdf content e intent y utilizar startActivityIntent
             }
         });
     }
@@ -80,11 +73,9 @@ public class MainActivity extends AppCompatActivity {
     private void crearLista(){
         ListView prendas = (ListView) findViewById(R.id.lPrendas);
         listaPrendas = new ArrayList<Prenda>();
-        // se conecta con una instancia de la clase que conecta con la BD, en este caso DBprendas
+        // se conecta con una instancia de la clase que conecta con la BD, en este caso "prendas"
         ddbb = new ConexionBBDDLocal(getApplicationContext(), "prendas", null, 1);
-        //listaPrendas = bbdd.obtenerTodasLasPrendas();
-
-        // se llama al método en el que se obtienen todas las prendas de la DBprendas
+        // se llama al método en el que se obtienen todas las prendas de la DB prendas
         obtenerTodasLasPrendas();
     }
 
@@ -95,11 +86,17 @@ public class MainActivity extends AppCompatActivity {
         Cursor c = db.rawQuery("SELECT * FROM prendas", null);
         while(c.moveToNext()){
             // se crean nuevas instancias de prenda con los datos obtenidos
-            p = new Prenda(c.getString(1), c.getString(2), c.getString(0), R.drawable.ic_launcher_background);
+            p = new Prenda(c.getString(1), c.getString(2), c.getString(0), R.drawable.iconoprendas);
             // se añaden en la lista que vamos a mostrar por pantalla en la interfaz
             listaPrendas.add(p);
         }
 
+    }
+
+    public void onClick(View view) {
+            Intent miIntent = new Intent(MainActivity.this, IntroducirPrendas.class);
+            startActivity(miIntent);
+            finish();
     }
 
 }

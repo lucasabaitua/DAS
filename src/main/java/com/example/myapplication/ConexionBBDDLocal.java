@@ -29,13 +29,12 @@ public class ConexionBBDDLocal extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(CREAR_PRENDA);
     }
 
-    // cuando se realiza algun cambio en la BD se elimina la creada anteriormente para dar pie a crear otra
-    //para que no de ningun error de no haber ninguna BD creada
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        //na que hacer
+        //nada que hacer ya que no cambiamos de versión la BD
     }
 
+    //método para añadir prendas a la BD
     public long anadir_prenda(String titulo, String descr, String fecha) {
         SQLiteDatabase db = getWritableDatabase();
 
@@ -43,14 +42,13 @@ public class ConexionBBDDLocal extends SQLiteOpenHelper {
         values.put(ComandosSQL.TITULO, titulo);
         values.put(ComandosSQL.DESCRIP, descr);
         values.put(ComandosSQL.FECHA, fecha);
-        //values.put(ComandosSQL.FOTO, foto);
 
+        //insertamos las prendas en la BD con su respectiva info
         long rowId = db.insert("prendas", null, values);
 
         db.close();
 
         return rowId;
     }
-
 
 }

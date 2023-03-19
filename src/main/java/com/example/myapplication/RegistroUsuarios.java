@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
@@ -25,7 +26,12 @@ public class RegistroUsuarios extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.registro);
+        if (getResources().getConfiguration().orientation== Configuration.ORIENTATION_LANDSCAPE){
+            setContentView(R.layout.registro_land);
+        }
+        else{
+            setContentView(R.layout.registro);
+        }
 
         // Inicializar EditText views
         mEmailEditText = findViewById(R.id.email_edit_text);
@@ -40,15 +46,17 @@ public class RegistroUsuarios extends AppCompatActivity {
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //obtener los campos rellenados de la información del nuevo usuario
                 String name = mNameEditText.getText().toString();
                 String email = mEmailEditText.getText().toString();
                 String password = mPasswordEditText.getText().toString();
 
+                //necesario rellenar todos los campos
                 if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
                     Toast.makeText(RegistroUsuarios.this, "Rellena todos los campos", Toast.LENGTH_SHORT).show();
                 } else {
-                    // Add user to database
-                    long rowId = mDatabaseHelper.addUser(name, email, password);
+                    // Añadir usuario a db
+                    long rowId = mDatabaseHelper.anadir_user(name, email, password);
                     if (rowId == -1) {
                         Toast.makeText(RegistroUsuarios.this, "Registro fallido", Toast.LENGTH_SHORT).show();
                     } else {

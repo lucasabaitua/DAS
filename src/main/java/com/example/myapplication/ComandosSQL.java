@@ -2,7 +2,7 @@ package com.example.myapplication;
 
 public class ComandosSQL {
 
-    // atributos necesarios para la registro de usuarios y login
+    // atributos y comandos SQL necesarios para la registro de usuarios y login
     public static final String NOM_REGISTRO = "usuario";
     public static final String CONTRA = "contraseña";
     public static final String EMAIL = "email";
@@ -13,17 +13,16 @@ public class ComandosSQL {
             + CONTRA + " TEXT, "
             + NOM + " TEXT " + ")";
 
-    // atributos necesarios para la introducción y actualización de prendas
+    // atributos y comandos SQL necesarios para la introducción y actualización de prendas
     public static final String NOM_TABLA = "prendas";
     public static final String FECHA = "fecha";
     public static final String TITULO = "titulo";
     public static final String DESCRIP = "descripcion";
-    //public static final String FOTO = "foto";
 
     public static final String CREAR_PRENDA = "CREATE TABLE " + NOM_TABLA +
-            "(" + FECHA + " TEXT, "
+            "(" +FECHA + " TEXT, "
             + TITULO + " TEXT, "
-            + DESCRIP + " TEXT)";
+            +  DESCRIP + " TEXT)";
 
 
 }

@@ -16,6 +16,8 @@ public class ConexionBBDDUsuarios extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
+        //ejecutamos el comando de crear la tabla de usuarios definida en la clase
+        // ComandosSQL
         sqLiteDatabase.execSQL(CREAR_USUARIO);
     }
 
@@ -24,7 +26,8 @@ public class ConexionBBDDUsuarios extends SQLiteOpenHelper {
         //nada que hacer
     }
 
-    public long addUser(String name, String email, String password) {
+    //método para añadir usuarios en la bd
+    public long anadir_user(String name, String email, String password) {
         SQLiteDatabase db = getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -32,6 +35,7 @@ public class ConexionBBDDUsuarios extends SQLiteOpenHelper {
         values.put(ComandosSQL.EMAIL, email);
         values.put(ComandosSQL.CONTRA, password);
 
+        //añadimos usuarios
         long rowId = db.insert("usuarios", null, values);
 
         db.close();
